@@ -13,7 +13,7 @@ import {
 } from "@xyflow/react";
 import SendMessageNode from "../component/SendMessageNode";
 import NodePanel from "../component/NodePanel";
-
+import EditPanel from "../component/EditPanel";
 import "@xyflow/react/dist/style.css";
 
 const nodeTypes = {
@@ -30,6 +30,21 @@ export default function Workspace() {
   const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [selectedNodeId, setSelectedNodeId] = React.useState<string | null>(
+    null
+  );
+
+  const onNodeClick = useCallback((_event: any, node: any) => {
+    setSelectedNodeId(node.id);
+  }, []);
+
+  const updateNodeMessage = (id: string, message: string) => {
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id ? { ...node, data: { ...node.data, message } } : node
+      )
+    );
+  };
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -77,10 +92,11 @@ export default function Workspace() {
     [setNodes]
   );
 
+  const selectedNode = nodes.find((node) => node.id === selectedNodeId);
+
   return (
     <ReactFlowProvider>
       <div className="flex w-screen h-screen">
-        {/* 🧠 Left: React Flow Canvas */}
         <div className="flex-1 relative" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
@@ -92,6 +108,7 @@ export default function Workspace() {
             onDragOver={onDragOver}
             nodeTypes={nodeTypes}
             fitView
+            onNodeClick={onNodeClick}
           >
             <Controls />
             <Background
@@ -102,14 +119,17 @@ export default function Workspace() {
             />
           </ReactFlow>
         </div>
-
-        {/* 📌 Right: MiniMap + Node Panel */}
-        <div className="w-60 flex flex-col border-l border-gray-300 bg-white">
-          <div>
-            <MiniMap />
-          </div>
+        <div className="w-80 flex flex-col border-l border-gray-300 bg-white">
           <div className="flex-1 overflow-y-auto">
-            <NodePanel />
+            {selectedNode ? (
+              <EditPanel
+                node={selectedNode}
+                onChangeMessage={updateNodeMessage}
+                onClose={() => setSelectedNodeId(null)}
+              />
+            ) : (
+              <NodePanel />
+            )}
           </div>
         </div>
       </div>
