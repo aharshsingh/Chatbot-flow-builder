@@ -15,7 +15,8 @@ import SendMessageNode from "../component/SendMessageNode";
 import NodePanel from "../component/NodePanel";
 import EditPanel from "../component/EditPanel";
 import "@xyflow/react/dist/style.css";
-
+import WorkspaceNavbar from "../component/Navbar";
+import { toast } from "sonner";
 const nodeTypes = {
   sendMessage: SendMessageNode,
 };
@@ -33,6 +34,30 @@ export default function Workspace() {
   const [selectedNodeId, setSelectedNodeId] = React.useState<string | null>(
     null
   );
+  const handleSave = () => {
+    if (nodes.length === 0) {
+      toast.error("No nodes to save.");
+      return;
+    }
+
+    if (nodes.length === 1) {
+      toast.success("Saved successfully!");
+      return;
+    }
+
+    const nodesWithNoIncoming = nodes.filter(
+      (node) => !edges.some((edge) => edge.target === node.id)
+    );
+
+    if (nodesWithNoIncoming.length > 1) {
+      toast.error(
+        "Multiple nodes are unconnected. Each node must have at least one incoming connection."
+      );
+      return;
+    }
+
+    toast.success("Saved successfully!");
+  };
 
   const onNodeClick = useCallback((_event: any, node: any) => {
     setSelectedNodeId(node.id);
@@ -96,40 +121,44 @@ export default function Workspace() {
 
   return (
     <ReactFlowProvider>
-      <div className="flex w-screen h-screen">
-        <div className="flex-1 relative" ref={reactFlowWrapper}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            nodeTypes={nodeTypes}
-            fitView
-            onNodeClick={onNodeClick}
-          >
-            <Controls />
-            <Background
-              variant={BackgroundVariant.Dots}
-              color="#691b9aa7"
-              gap={30}
-              size={3}
-            />
-          </ReactFlow>
-        </div>
-        <div className="w-80 flex flex-col border-l border-gray-300 bg-white">
-          <div className="flex-1 overflow-y-auto">
-            {selectedNode ? (
-              <EditPanel
-                node={selectedNode}
-                onChangeMessage={updateNodeMessage}
-                onClose={() => setSelectedNodeId(null)}
+      <div className="flex flex-col w-screen h-screen">
+        <WorkspaceNavbar onSave={handleSave} />
+
+        <div className="flex flex-1 overflow-hidden">
+          <div className="flex-1 relative" ref={reactFlowWrapper}>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              nodeTypes={nodeTypes}
+              fitView
+              onNodeClick={onNodeClick}
+            >
+              <Controls />
+              <Background
+                variant={BackgroundVariant.Dots}
+                color="#691b9aa7"
+                gap={30}
+                size={3}
               />
-            ) : (
-              <NodePanel />
-            )}
+            </ReactFlow>
+          </div>
+          <div className="w-80 flex flex-col border-l border-gray-300 bg-white">
+            <div className="flex-1 overflow-y-auto">
+              {selectedNode ? (
+                <EditPanel
+                  node={selectedNode}
+                  onChangeMessage={updateNodeMessage}
+                  onClose={() => setSelectedNodeId(null)}
+                />
+              ) : (
+                <NodePanel />
+              )}
+            </div>
           </div>
         </div>
       </div>
