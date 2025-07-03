@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import {
   ReactFlow,
-  MiniMap,
   Controls,
   Background,
   BackgroundVariant,
@@ -15,6 +14,7 @@ import SendMessageNode from "../component/SendMessageNode";
 import NodePanel from "../component/NodePanel";
 import EditPanel from "../component/EditPanel";
 import "@xyflow/react/dist/style.css";
+import { MarkerType } from "@xyflow/react";
 import WorkspaceNavbar from "../component/Navbar";
 import { toast } from "sonner";
 const nodeTypes = {
@@ -73,13 +73,15 @@ export default function Workspace() {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      const alreadyConnected = edges.some(
-        (e) =>
-          e.target === params.target && e.targetHandle === params.targetHandle
+      const sourceAlreadyConnected = edges.some(
+        (e) => e.source === params.source
       );
-      if (!alreadyConnected) {
-        setEdges((eds) => addEdge(params, eds));
+
+      if (sourceAlreadyConnected) {
+        toast.error("Only one edge can originate from a source handle.");
+        return;
       }
+      setEdges((eds) => addEdge(params, eds));
     },
     [edges, setEdges]
   );
@@ -137,6 +139,12 @@ export default function Workspace() {
               nodeTypes={nodeTypes}
               fitView
               onNodeClick={onNodeClick}
+              defaultEdgeOptions={{
+                style: { strokeWidth: 2, stroke: "#4db6ac" },
+                markerEnd: {
+                  type: MarkerType.ArrowClosed,
+                },
+              }}
             >
               <Controls />
               <Background

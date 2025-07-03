@@ -1,7 +1,5 @@
-import React from "react";
-
 interface EditPanelProps {
-  node: any; // or better, use 'unknown' and assert below
+  node: any;
   onChangeMessage: (nodeId: string, message: string) => void;
   onClose: () => void;
 }

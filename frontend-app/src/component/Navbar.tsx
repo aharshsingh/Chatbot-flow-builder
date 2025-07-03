@@ -36,7 +36,7 @@ export default function WorkspaceNavbar({ onSave }: WorkspaceNavbarProps) {
       <div>
         <button
           onClick={onSave}
-          className="bg-indigo-600 text-white text-sm px-4 py-1 rounded border border-indigo-600 hover:bg-white hover:text-indigo-600 transition"
+          className="text-sm px-4 py-1 rounded border border-[#1b3c3f] text-[#1b3c3f]"
         >
           Save Changes
         </button>
