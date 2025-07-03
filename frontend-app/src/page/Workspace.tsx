@@ -17,6 +17,7 @@ import "@xyflow/react/dist/style.css";
 import { MarkerType } from "@xyflow/react";
 import WorkspaceNavbar from "../component/Navbar";
 import { toast } from "sonner";
+
 const nodeTypes = {
   sendMessage: SendMessageNode,
 };
@@ -33,8 +34,8 @@ export default function Workspace() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNodeId, setSelectedNodeId] = React.useState<string | null>(
     null
-  );
-  const handleSave = () => {
+  );  
+  const handleSave = () => {                                        //This will called after clicking on the save button and it checks if any more than two nodes are not connected
     if (nodes.length === 0) {
       toast.error("No nodes to save.");
       return;
@@ -59,11 +60,11 @@ export default function Workspace() {
     toast.success("Saved successfully!");
   };
 
-  const onNodeClick = useCallback((_event: any, node: any) => {
+  const onNodeClick = useCallback((_event: any, node: any) => {       //The function wraps the set function to set the selected node Id
     setSelectedNodeId(node.id);
   }, []);
 
-  const updateNodeMessage = (id: string, message: string) => {
+  const updateNodeMessage = (id: string, message: string) => {        //For updating the node message
     setNodes((nds) =>
       nds.map((node) =>
         node.id === id ? { ...node, data: { ...node.data, message } } : node
@@ -71,7 +72,7 @@ export default function Workspace() {
     );
   };
 
-  const onConnect = useCallback(
+  const onConnect = useCallback(                                     //This function checks for the alreadyConnected source handle for a node and then set the edge for that node
     (params: Connection) => {
       const sourceAlreadyConnected = edges.some(
         (e) => e.source === params.source
@@ -86,13 +87,13 @@ export default function Workspace() {
     [edges, setEdges]
   );
 
-  const onDragOver = useCallback((event: React.DragEvent) => {
+  const onDragOver = useCallback((event: React.DragEvent) => {      //Drag Function for the draging the node
     event.preventDefault();
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = "move";
     }
   }, []);
-  const onDrop = useCallback(
+  const onDrop = useCallback(                                     //Drop function with a callback for droping the node
     (event: React.DragEvent) => {
       event.preventDefault();
 
@@ -119,7 +120,7 @@ export default function Workspace() {
     [setNodes]
   );
 
-  const selectedNode = nodes.find((node) => node.id === selectedNodeId);
+  const selectedNode = nodes.find((node) => node.id === selectedNodeId);    //Function to get the selected node with help of selectedNodeId for entering the text in a node
 
   return (
     <ReactFlowProvider>

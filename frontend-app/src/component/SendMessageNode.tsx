@@ -1,7 +1,7 @@
 import * as ReactFlow from "@xyflow/react";
 import { MessageCircle } from "lucide-react";
 
-const SendMessageNode = ({ data }: any) => {
+const SendMessageNode = ({ data }: any) => {        //This is the send message node which comprises the message as text
   const { Handle, Position } = ReactFlow;
 
   return (

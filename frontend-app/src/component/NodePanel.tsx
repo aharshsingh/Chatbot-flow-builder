@@ -1,7 +1,7 @@
 import SendMessageNode from "./SendMessageNode";
 import { Workflow } from "lucide-react";
 
-const nodeTypes = [
+const nodeTypes = [           //This array has the types of nodes in future to scale we can just make a new node and add it to this array
   {
     type: "sendMessage",
     label: "Send Message",

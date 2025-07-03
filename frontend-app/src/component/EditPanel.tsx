@@ -1,3 +1,4 @@
+//This panel is used for the editing of the message of node
 interface EditPanelProps {
   node: any;
   onChangeMessage: (nodeId: string, message: string) => void;
@@ -6,7 +7,7 @@ interface EditPanelProps {
 
 type SendMessageNodeData = {
   message: string;
-};
+};                  
 
 export default function EditPanel({
   node,
